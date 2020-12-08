@@ -1,0 +1,126 @@
+# The first digit
+# Major Industry Identifier (MII), which tells what sort of institution issued the card.
+
+# 1 and 2 are issued by airlines
+# 3 is issued by travel and entertainment
+# 4 and 5 are issued by banking and financial institutions
+# 6 is issued by merchandising and banking
+# 7 is issued by petroleum companies
+# 8 is issued by telecommunications companies
+# 9 is issued by national assignment
+
+# The first six digits are the Issuer Identification Number (IIN)
+# In project banking system, the IIN must be 400000.
+
+# The seventh digit to the second-to-last digit is the customer account number
+
+# The very last digit of a credit card is the check digit or checksum - Luhn algorithm.
+
+from random import randrange
+from enum import Enum
+
+
+class Bank:
+    issuer_identification_number = str(400000)  # IIN
+
+    def __init__(self):
+        self.pin_number = []
+        self.card_number = []
+        self.choose = int()
+        self.customer_account_number = []
+        self.checksum = int()
+        # Bank.__str__(self)
+
+    def pin_code(self):  # Create a 4 digit PIN
+        self.pin_number = (str(randrange(9999))).zfill(4)
+        return self.pin_number
+
+    def card_code(self):  # Create a 9-digit account number and assign a PIN to it
+        file = open('Bank customer list.txt', 'a+')
+        self.checksum = str(randrange(9))
+        self.customer_account_number = (str(randrange(999999999))).zfill(9)
+        self.card_number = Bank.issuer_identification_number + self.customer_account_number + self.checksum
+        Bank.pin_code(self)
+        customer_account_info = '{} {}\n'.format(self.card_number, self.pin_number)
+        file.write(customer_account_info)
+        file.close()
+        return self.card_number, self.pin_number
+
+    def save_number(self, lst): # pin number were assigned to a given person as DICT
+        all_login_data = {lst[i]: lst[i + 1] for i in range(0, len(lst), 2)}
+        return all_login_data
+
+    def exit():
+        print('\nBye!')
+        exit()
+
+    def main_options(self):  # Main menu
+        self.choose = input('1. Create an account\n'
+                            '2. Log into account\n'
+                            '0. Exit\n')
+        if self.choose == '1':
+            print('\nYour card has been created')
+            Bank.__str__(self)
+            Bank.main_options(self)
+        elif self.choose == '2':
+            # Bank.__str__(self)
+            Bank.log_in(self)
+            Bank.main_options(self)
+        elif self.choose == '0':
+            Bank.exit()
+        else:
+            print('\nWrong command number. Choose a different number.\n')
+            Bank.main_options(self)
+
+    def log_in(self):  # Account login menu
+        file = open('Bank customer list.txt', 'r')
+        client_list = file.read()
+        lst = client_list.split()
+        customer_list = Bank.save_number(self, lst)
+        file.close()
+        self.account_number = input('\nEnter your card number:\n')
+        self.account_number = self.account_number.strip()
+        pin_number = input('Enter your PIN:\n')
+        pin_number = pin_number.strip()
+        if self.account_number in customer_list:
+            if str(pin_number) == customer_list[str(self.account_number)]:
+                print('\nYou have successfully logged in!\n')
+                Bank.account_balance_menu(self)
+            else:
+                print('\nWrong PIN number!\n')
+                Bank.main_options(self)
+        else:
+            print('\nWrong card number!\n')
+            Bank.main_options(self)
+
+    def account_balance_menu(self):
+        self.choose = input('1. Balance\n'
+                            '2. Log out\n'
+                            '0. Exit\n')
+        if self.choose == '1':
+            print('\nBalance: 0\n')
+            Bank.account_balance_menu(self)
+        elif self.choose == '2':
+            print('\nYou have successfully logged out!:\n')
+            Bank.main_options(self)
+        elif self.choose == '0':
+            Bank.exit()
+        else:
+            print('\nWrong command number. Choose a different number.\n')
+            Bank.account_balance_menu(self)
+
+    def budget(self):
+        file = open('Bank customer list.txt', 'r')
+        client_list = file.read()
+        # kopiowanie numerów kont, jak nowe przypis 0 jak wartość pokaż
+
+    def __str__(self): # Displaying messages
+        if self.choose == '1':
+            Bank.card_code(self)
+            print(f'Your card number:\n''{}\nYour card pin:\n{}\n'.format(self.card_number, self.pin_number))
+        # elif self.choose == '2':
+            # Bank.log_in(self)
+
+
+bank = Bank()
+bank.main_options()
