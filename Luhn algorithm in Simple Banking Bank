@@ -17,8 +17,6 @@
 # The very last digit of a credit card is the check digit or checksum - Luhn algorithm.
 
 from random import randrange
-from enum import Enum
-
 
 class Bank:
     issuer_identification_number = str(400000)  # IIN
@@ -47,16 +45,13 @@ class Bank:
         for i in range(0, 15):  # Subtract 9 to numbers over 9:
             if int(digit_list[int(i)]) > 9:
                 digit_list[int(i)] = str(int(digit_list[int(i)]) - 9)
-        print(f'luhn_algorithm', digit_list)
         return digit_list
 
     def checksum(self):
         sum_list = Bank.luhn_algorithm(self)
-        print(sum_list)
         digit_sum = 0
         for digit in sum_list:
             digit_sum += int(digit)
-        print(digit_sum)
         if (digit_sum // 10) == 0:
             card_number = Bank.issuer_identification_number + self.customer_account_number
         else:
