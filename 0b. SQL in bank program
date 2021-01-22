@@ -1,0 +1,119 @@
+import sqlite3
+from sqlite3 import Error  # libraries
+from random import randrange
+
+class Bank:
+        issuer_identification_number = str(400000)  # IIN
+
+        def __init__(self):
+                self.connection = Bank.create_connection("bank_accounts.db")
+                Bank.database(self)
+
+        def create_connection(path):  # connection with libraries
+                connection = None
+                try:
+                        connection = sqlite3.connect(path)
+                        print("Connection to SQLite DB successful")
+                except Error as e:
+                        print(f"The error '{e}' occurred")
+
+                return connection
+
+        def execute_query(connection, query):  # cursor position
+                cursor = connection.cursor()
+                try:
+                        cursor.execute(query)
+                        connection.commit()
+                        print("Query executed successfully")
+                except Error as e:
+                        print(f"The error '{e}' occurred")
+
+        @staticmethod
+        def database(self):
+                # delete table = ("DROP TABLE IF EXISTS number_list;")
+                # Bank.execute_query(connection, delete table)
+
+                create_users_table = (""" 
+                CREATE TABLE IF NOT EXISTS number_list (
+                    id INTEGER PRIMARY KEY ASC,
+                    number varchar(50) NOT NULL,
+                    PIN varchar(50) NOT NULL,
+                    balance INTEGER DEFAULT 0
+                )""")
+
+                Bank.execute_query(self.connection, create_users_table)  # saves changes
+
+        def main_options(self):  # Main menu
+                self.choose = input('1. Create an account\n'
+                                    '2. Log into account\n'
+                                    '0. Exit\n')
+                if self.choose == '1':
+                        print('\nYour card has been created')
+                        Bank.card_code(self)
+                        Bank.__str__(self)
+                        Bank.main_options(self)
+                #elif self.choose == '2':
+                        # Bank.log_in(self)
+                        # Bank.main_options(self)
+                elif self.choose == '0':
+                        Bank.exit()
+                else:
+                        print('\nWrong command number. Choose a different number.\n')
+                        Bank.main_options(self)
+
+        def __str__(self):  # Displaying messages
+                if self.choose == '1':
+                        print(f'Your card number:\n''{}\nYour card pin:\n{}\n'.format(self.card_number,
+                                                                                      self.pin_number))
+
+        def exit():
+                print('\nBye!')
+                exit()
+
+        def card_code(self):  # Create a 9-digit account number and assign a PIN to it
+                self.customer_account_number = (str(randrange(999999999))).zfill(9)
+                self.card_number = Bank.checksum(self)
+                Bank.pin_code(self)
+                id = 'null'
+                self.balance = 50
+                data = [(self.card_number, self.pin_number, self.balance)]
+                self.connection.executemany("INSERT INTO number_list (number, PIN, balance) VALUES (?, ?, ?)", data)
+                self.connection.commit()
+                return self.card_number, self.pin_number
+
+        def checksum(self):
+                sum_list = Bank.luhn_algorithm(self)
+                digit_sum = 0
+                for digit in sum_list:
+                        digit_sum += int(digit)
+                if (digit_sum // 10) == 0:
+                        card_number = Bank.issuer_identification_number + self.customer_account_number
+                else:
+                        control_number = digit_sum % 10
+                        if control_number == 0:
+                                card_number = Bank.issuer_identification_number + self.customer_account_number
+                        else:
+                                Luhn_number = 10 - control_number
+                                card_number = Bank.issuer_identification_number + self.customer_account_number + str(
+                                        Luhn_number)
+                return card_number
+
+        def luhn_algorithm(self):
+                digit_list = []
+                digits_for_luhn = Bank.issuer_identification_number + self.customer_account_number
+                for digit in digits_for_luhn:
+                        digit_list += digit
+                for i in range(0, 15):  # Multiply odd digits by 2:
+                        if (i % 2) == 0:
+                                digit_list[int(i)] = str(int(digit_list[int(i)]) * 2)
+                for i in range(0, 15):  # Subtract 9 to numbers over 9:
+                        if int(digit_list[int(i)]) > 9:
+                                digit_list[int(i)] = str(int(digit_list[int(i)]) - 9)
+                return digit_list
+
+        def pin_code(self):  # Create a 4 digit PIN
+                self.pin_number = (str(randrange(9999))).zfill(4)
+                return self.pin_number
+
+bank = Bank()
+bank.main_options()
