@@ -20,3 +20,44 @@ cur = polaczenie.cursor()
 print("")
 for row in cur.execute('SELECT * FROM stocks'):
     print(row)
+
+
+import sqlite3                                                           # sprawdzenie SQL - zapisywanie danych do bazy i jednoczesny wydruk wszystkich recordów
+
+polaczenie = sqlite3.connect('auta.db')
+# polaczenie = sqlite3.connect(":memory:")
+
+kursor = polaczenie.cursor()
+
+#kursor.execute("DROP TABLE IF EXISTS auta;")
+kursor.execute("""CREATE TABLE IF NOT EXISTS auta (
+    id INTEGER PRIMARY KEY ASC,
+    marka varchar(30) NOT NULL,
+    kolor varchar(30) NOT NULL,
+    rocznik integer NOT NULL)
+    """)
+
+# pozwala wykonywać wiele instrukcji jednocześnie, np.: tworzyć wiele tabel
+kursor.executescript(""" CREATE TABLE IF NOT EXISTS auta(
+    id INTEGER PRIMARY KEY ASC,
+    marka varchar(30) NOT NULL,
+    kolor varchar(30) NOT NULL,
+    rocznik integer NOT NULL)
+    """)
+polaczenie.commit()
+
+id = 'NULL'
+
+number_of_cars = int(input("Ile aut chcesz wprowadzić? "))
+for n in range(0, number_of_cars):
+    marka = input("\nWpisz markę auta: ")
+    kolor = input("Wpisz kolor auta: ")
+    rocznik = int(input("Wpisz rocznik auta: "))
+    data = [(marka, kolor, rocznik)]
+    polaczenie.executemany("INSERT INTO auta (marka, kolor, rocznik) VALUES (?, ?, ?)", data)
+polaczenie.commit()  # bez tego nei zapisze mi do bazy - brak połączenia
+
+for row in kursor.execute('SELECT * FROM auta'):
+    print(row)
+
+polaczenie.close()
