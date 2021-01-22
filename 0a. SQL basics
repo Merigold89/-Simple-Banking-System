@@ -21,6 +21,16 @@ print("")
 for row in cur.execute('SELECT * FROM stocks'):
     print(row)
 
+print("")
+for car in kursor.execute("SELECT rocznik FROM auta WHERE kolor='biały'"):
+    car = list(car)
+    if car[0] == 2010:
+        print(car[0])
+    else:
+        print("Brak rocznika")
+        
+polaczenie.close()      
+
 
 import sqlite3                                                           # sprawdzenie SQL - zapisywanie danych do bazy i jednoczesny wydruk wszystkich recordów
 
