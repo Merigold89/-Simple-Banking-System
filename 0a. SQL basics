@@ -55,7 +55,7 @@ for n in range(0, number_of_cars):
     rocznik = int(input("Wpisz rocznik auta: "))
     data = [(marka, kolor, rocznik)]
     polaczenie.executemany("INSERT INTO auta (marka, kolor, rocznik) VALUES (?, ?, ?)", data)
-polaczenie.commit()  # bez tego nei zapisze mi do bazy - brak połączenia
+polaczenie.commit()  # bez tego nie zapisze mi do bazy - brak połączenia
 
 for row in kursor.execute('SELECT * FROM auta'):
     print(row)
