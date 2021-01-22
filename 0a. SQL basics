@@ -1,0 +1,22 @@
+import sqlite3                                                           # the first simple program that creates a BD in memory, stores data about the car and prints it
+
+polaczenie = sqlite3.connect(":memory:")
+polaczenie.execute("create table stocks ("
+                   "id INTEGER PRIMARY KEY ASC,"
+                   "marka varchar(30) NOT NULL, "
+                   "kolor varchar(30) NOT NULL, "
+                   "rocznik integer NOT NULL)")
+
+number_of_cars = int(input("Ile aut chcesz wprowadzić? "))
+for n in range(0, number_of_cars):
+    id = 'NULL'
+    marka = input("\nWpisz markę auta: ")
+    kolor = input("Wpisz kolor auta: ")
+    rocznik = int(input("Wpisz rocznik auta: "))
+    stocks = [(marka, kolor, rocznik)]
+    polaczenie.executemany("insert into stocks (marka, kolor, rocznik) values (?, ?, ?)", stocks)
+
+cur = polaczenie.cursor()
+print("")
+for row in cur.execute('SELECT * FROM stocks'):
+    print(row)
